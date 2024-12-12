@@ -1,0 +1,10 @@
+version: v2
+clean: true
+inputs:
+  - directory: proto
+
+plugins:
+  # We're going to use a plugin that's hosted by Buf: nothing local to install!
+  - remote: buf.build/bufbuild/es
+    out: ./js/todo/src/lib/gen/proto
+    include_imports: true

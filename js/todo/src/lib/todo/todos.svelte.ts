@@ -1,3 +1,10 @@
+import { create } from '@bufbuild/protobuf';
+import {
+    type Todo,
+    type TodoList,
+    TodoListSchema, TodoSchema
+} from "$lib/gen/proto/simplewins/todo/v1/todo_pb";
+
 // Instead of defineStore() or any framework magic, we can use a plain-old-es6
 // class to hold global state.
 class TodoStore {
@@ -5,14 +12,15 @@ class TodoStore {
     // Goodbye, "state: () => ({ foo: "bar"})", hello plain-old-properties!
 
     // We'll keep the list of Todos private...
-    private _todos: Todo[] = $state([])
+    private _todoList: TodoList = $state(create(TodoListSchema))
+
     // ...but expose a derived/Pinia "getter"-style filtered list with a normal
     // old getter function
     get todos():Todo[] {
         switch( this.filter ) {
-            case 'finished': return this._todos.filter(it => it.isFinished)
-            case 'unfinished': return this._todos.filter(it => !it.isFinished)
-            default: return this._todos
+            case 'finished': return this._todoList.todos.filter(({ isFinished }) => isFinished)
+            case 'unfinished': return this._todoList.todos.filter(({ isFinished }) => !isFinished)
+            default: return this._todoList.todos
         }
     }
 
@@ -25,17 +33,11 @@ class TodoStore {
     // Actions? Mutations? Nope: just public methods! (You can control when
     // something reactive is updated!)
     addToDo(text:string):void {
-        this._todos.push({text: text, isFinished: false, id: this.nextId++})
+        this._todoList.todos.push(
+            create(TodoSchema, {text: text, isFinished: false, id: this.nextId++})
+        )
     }
 
-}
-
-// No need for a full-blown class: we just want a simple shape of a to-do to
-// be defined.
-interface Todo {
-    text: string
-    id: number
-    isFinished: boolean
 }
 
 // Export one instance of our Store class as global state.

@@ -1,0 +1,32 @@
+syntax="proto3";
+
+// Like Java or C#, proto source files go in packages, and they should
+// follow their directory structure, relative to a buf.yaml.
+package simplewins.todo.v1;
+
+// Protobuf "messages" are custom data types, like value objects or DTOs
+message TodoList {
+  // Proto fields have "tags," which are integers assigning them their
+  // positions within binary packets.
+  //
+  // Think of it as a column position in a database table: if you change
+  // the shape of the message, you don't re-use it!
+  string name = 1;
+
+  // Arrays can be represented by stating that a field is "repeated",
+  // and all of your other messages are available as types
+  repeated Todo todos = 2;
+}
+
+message Todo {
+  // In proto, it's important to consider the size of a number and whether
+  // or not it's signed (positive or negative). If all you need is positive
+  // numbers, uint32 or uint64 are a solid bet.
+  uint32 id = 1;
+
+  // Strings, though, are just "string"!
+  string text = 2;
+
+  // Snake case is the proto convention, and "bool" should make sense.
+  bool is_finished = 3;
+}
